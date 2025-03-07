@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.config.settings import get_settings
 from app.core.database import init_db
+from app.api.endpoints import users
 
 settings = get_settings()
 
@@ -17,6 +18,13 @@ app = FastAPI(
     description=settings.APP_DESCRIPTION,
     version="0.1.0",
     lifespan=lifespan
+)
+
+# Include routers
+app.include_router(
+    users.router,
+    prefix=f"{settings.API_V1_STR}/users",
+    tags=["users"]
 )
 
 @app.get("/", tags=["root"])
