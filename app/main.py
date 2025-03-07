@@ -1,12 +1,22 @@
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from app.config.settings import get_settings
+from app.core.database import init_db
 
 settings = get_settings()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize the database connection
+    await init_db()
+    yield
+    # Cleanup code if needed
 
 app = FastAPI(
     title=settings.APP_NAME,
     description=settings.APP_DESCRIPTION,
-    version="0.1.0"
+    version="0.1.0",
+    lifespan=lifespan
 )
 
 @app.get("/", tags=["root"])
